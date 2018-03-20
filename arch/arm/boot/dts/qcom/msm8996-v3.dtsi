@@ -40,7 +40,27 @@
 &clock_gpu {
 	compatible = "qcom,gpucc-8996-v3";
 	qcom,gfx3d_clk_src_v2-opp-handle = <&msm_gpu>;
+#ifdef CONFIG_VOID_CRAZY_GPU_OC
 	qcom,gfxfreq-speedbin0 =
+		<	   0  0  0 >,
+		<  133000000  2  4 >,
+		<  214000000  3  4 >,
+		<  315000000  4  4 >,
+		<  420000000  5  5 >,
+		<  530000000  6  5 >,
+		<  624000000  7  7 >,
+		<  710000000  8  7 >;
+	qcom,gfxfreq-mx-speedbin0 =
+		<	   0  0 >,
+		<  133000000  4 >,
+		<  214000000  4 >,
+		<  315000000  4 >,
+		<  420000000  5 >,
+		<  530000000  5 >,
+		<  624000000  7 >,
+		<  710000000  7 >;
+#else
+  qcom,gfxfreq-speedbin0 =
 		<	   0  0  0 >,
 		<  133000000  2  4 >,
 		<  214000000  3  4 >,
@@ -48,7 +68,7 @@
 		<  401800000  5  5 >,
 		<  510000000  6  5 >,
 		<  560000000  7  7 >,
-		<  624000000  8  7 >;
+		<  652800000  8  7 >;
 	qcom,gfxfreq-mx-speedbin0 =
 		<	   0  0 >,
 		<  133000000  4 >,
@@ -57,7 +77,8 @@
 		<  401800000  5 >,
 		<  510000000  5 >,
 		<  560000000  7 >,
-		<  624000000  7 >;
+		<  652800000  7 >;
+#endif
 
 	qcom,gfxfreq-speedbin1 =
 		<	   0  0  0 >,
@@ -154,12 +175,44 @@
 			qcom,speed-bin = <0>;
 
 			qcom,initial-pwrlevel = <6>;
-
+#ifdef CONFIG_VOID_CRAZY_GPU_OC
 			qcom,gpu-pwrlevel@0 {
 				reg = <0>;
-				qcom,gpu-freq = <624000000>;
+				qcom,gpu-freq = <710000000>;
 				qcom,bus-freq = <12>;
-				qcom,bus-min = <11>;
+				qcom,bus-min = <12>;
+				qcom,bus-max = <12>;
+			};
+
+			qcom,gpu-pwrlevel@1 {
+				reg = <1>;
+				qcom,gpu-freq = <624000000>;
+				qcom,bus-freq = <11>;
+				qcom,bus-min = <10>;
+				qcom,bus-max = <12>;
+			};
+
+			qcom,gpu-pwrlevel@2 {
+				reg = <2>;
+				qcom,gpu-freq = <530000000>;
+				qcom,bus-freq = <9>;
+				qcom,bus-min = <8>;
+				qcom,bus-max = <11>;
+			};
+
+			qcom,gpu-pwrlevel@3 {
+				reg = <3>;
+				qcom,gpu-freq = <420000000>;
+				qcom,bus-freq = <8>;
+				qcom,bus-min = <7>;
+				qcom,bus-max = <9>;
+			};
+#else
+			qcom,gpu-pwrlevel@0 {
+				reg = <0>;
+				qcom,gpu-freq = <652800000>;
+				qcom,bus-freq = <12>;
+				qcom,bus-min = <12>;
 				qcom,bus-max = <12>;
 			};
 
@@ -187,6 +240,7 @@
 				qcom,bus-max = <9>;
 			};
 
+#endif
 			qcom,gpu-pwrlevel@4 {
 				reg = <4>;
 				qcom,gpu-freq = <315000000>;
@@ -572,8 +626,13 @@
 			< 1228800000 12 >,
 			< 1324800000 13 >,
 			< 1401600000 14 >,
-			< 1478400000 15 >,
-			< 1593600000 16 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+			< 1632000000 15 >,
+			< 1804800000 16 >;
+#else
+			< 1593600000 15 >,
+			< 1766400000 16 >;
+#endif
 		qcom,pwrcl-speedbin1-v0 =
 			<          0  0 >,
 			<  307200000  1 >,
@@ -649,8 +708,13 @@
 			< 1824000000 21 >,
 			< 1920000000 22 >,
 			< 1996800000 23 >,
-			< 2073600000 24 >,
-			< 2150400000 25 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+			< 2169600000 24 >,
+			< 2323200000 25 >;
+#else
+			< 2150400000 24 >,
+			< 2304000000 25 >;
+#endif
 		qcom,perfcl-speedbin1-v0 =
 			<          0  0 >,
 			<  307200000  1 >,
@@ -741,7 +805,11 @@
 			< 1382400000 16 >,
 			< 1459200000 17 >,
 			< 1536000000 18 >,
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+			< 1670400000 19 >;
+#else
 			< 1593600000 19 >;
+#endif
 		qcom,cbf-speedbin1-v0 =
 			<	   0  0 >,
 			<  307200000  1 >,
@@ -815,8 +883,13 @@
 		< 1228800 >,
 		< 1324800 >,
 		< 1401600 >,
-		< 1478400 >,
-		< 1593600 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+		< 1632000 >,
+		< 1804800 >;
+#else
+		< 1593600 >,
+		< 1766400 >;
+#endif
 	qcom,cpufreq-table-2 =
 		<  307200 >,
 		<  403200 >,
@@ -841,8 +914,13 @@
 		< 1824000 >,
 		< 1920000 >,
 		< 1996800 >,
-		< 2073600 >,
-		< 2150400 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+		< 2169600 >,
+		< 2323200 >;
+#else
+		< 2150400 >,
+		< 2304000 >;
+#endif
 };
 
 &m4m_cache {
@@ -865,7 +943,11 @@
 		< 1382400 >,
 		< 1459200 >,
 		< 1536000 >,
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+		< 1670400 >;
+#else
 		< 1593600 >;
+#endif
 };
 
 &devfreq_cpufreq {
@@ -885,8 +967,13 @@
 			< 1228800   902400 >,
 			< 1324800  1056000 >,
 			< 1401600  1132800 >,
-			< 1478400  1190400 >,
-			< 1593600  1382400 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+			< 1632000  1459200 >,
+			< 1804800  1459200 >;
+#else
+			< 1593600  1382400 >,
+			< 1766400  1382400 >;
+#endif
 		cpu-to-dev-map-2 =
 			<  480000  307200 >,
 			<  556800  307200 >,
@@ -909,16 +996,30 @@
 			< 1824000 1382400 >,
 			< 1920000 1459200 >,
 			< 1996800 1593600 >,
-			< 2073600 1593600 >,
-			< 2150400 1593600 >;
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+			< 2169600 1670400 >,
+			< 2323200 1670400 >;
+#else
+			< 2150400 1593600 >,
+			< 2304000 1593600 >;
+#endif
 	};
 
 	mincpubw-cpufreq {
+#ifdef CONFIG_VOID_CRAZY_CPU_OC
+		cpu-to-dev-map-0 =
+			< 1401600 1525 >,
+			< 1632000 5195 >;
+		cpu-to-dev-map-2 =
+			< 1996800 1525 >,
+			< 2169600 7759 >;
+#else
 		cpu-to-dev-map-0 =
 			< 1593600 1525 >;
 		cpu-to-dev-map-2 =
-			< 2073600 1525 >,
+			< 1996800 1525 >,
 			< 2150400 5195 >;
+#endif
 	};
 };
 
