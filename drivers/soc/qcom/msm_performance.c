@@ -397,7 +397,7 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 		i_cpu_stats = &per_cpu(cpu_stats, cpu);
 
 		/* HACK HACK HACK to ignore AOSP BoostFramework. Use InputBoost instead! */
-		if (val == 1036800 && cpu >= 2) {
+		if (val >= 1593600) {
 			pr_debug("msm_perf: rejecting CPU%u min-freq %u!", cpu, val);
 			return 0;
 		} else {
