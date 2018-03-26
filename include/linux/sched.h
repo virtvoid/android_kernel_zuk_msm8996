@@ -413,6 +413,9 @@ extern signed long schedule_timeout_uninterruptible(signed long timeout);
 asmlinkage void schedule(void);
 extern void schedule_preempt_disabled(void);
 
+extern long io_schedule_timeout(long timeout);
+
+
 struct nsproxy;
 struct user_namespace;
 
