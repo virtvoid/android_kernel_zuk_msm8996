@@ -52,6 +52,7 @@ static int convert_prio(int prio)
 	return cpupri;
 }
 
+#ifndef CONFIG_SCHED_QHMP
 /**
  * cpupri_find - remove a cpu from the mask if it is likely non-preemptible
  * @lowest_mask: mask with selected CPUs (non-NULL)
@@ -69,6 +70,7 @@ drop_nopreempt_cpus(struct cpumask *lowest_mask)
 		cpu = cpumask_next(cpu, lowest_mask);
 	}
 }
+#endif
 
 /**
  * cpupri_find - find the best (lowest-pri) CPU in the system
@@ -130,9 +132,11 @@ retry:
 
 		if (lowest_mask) {
 			cpumask_and(lowest_mask, &p->cpus_allowed, vec->mask);
+#ifndef CONFIG_SCHED_QHMP
 			if (drop_nopreempts) {
 				drop_nopreempt_cpus(lowest_mask);
 			}
+#endif
 			/*
 			 * We have to ensure that we have at least one bit
 			 * still set in the array, since the map could have
