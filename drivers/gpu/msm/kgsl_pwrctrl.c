@@ -716,6 +716,32 @@ err:
 	mutex_unlock(&device->mutex);
 }
 
+void gpufreq_underfreq(int usrval)
+{
+	int val;
+	int max_clk;
+	struct kgsl_pwrctrl *pwr;
+	struct kgsl_device *device = kgsl_get_device(KGSL_DEVICE_3D0);
+
+	if (IS_ERR_OR_NULL(device))
+		return;
+	
+	pwr = &device->pwrctrl;
+	if (underfreq_enable) {
+		max_clk = pwr->pwrlevels[2].gpu_freq;
+	} else {
+		max_clk = pwr->pwrlevels[0].gpu_freq;
+	}
+	
+	/* Whatever. We could let users override max gpu if they wanted,
+	   but to be consistent with CPU clock constraints, we don't. */
+	val = usrval && usrval < max_clk ? usrval : max_clk;
+	//val = usrval ? usrval: max_clk;
+
+	pr_info("UNDERFREQ: Requesting max_gpu_clk %i\n", val);
+	kgsl_pwrctrl_max_clock_set (device, val);
+}
+
 static ssize_t kgsl_pwrctrl_max_gpuclk_store(struct device *dev,
 					 struct device_attribute *attr,
 					 const char *buf, size_t count)
@@ -730,9 +756,8 @@ static ssize_t kgsl_pwrctrl_max_gpuclk_store(struct device *dev,
 	ret = kgsl_sysfs_store(buf, &val);
 	if (ret)
 		return ret;
-
-	kgsl_pwrctrl_max_clock_set(device, val);
-
+	
+	gpufreq_underfreq(val);
 	return count;
 }
 
@@ -1380,8 +1405,8 @@ static ssize_t kgsl_pwrctrl_max_clock_mhz_store(struct device *dev,
 		return ret;
 
 	val *= 1000000;
-	kgsl_pwrctrl_max_clock_set(device, val);
-
+	gpufreq_underfreq(val);
+	
 	return count;
 }
 

@@ -311,7 +311,7 @@ static inline void adjust_jiffies(unsigned long val, struct cpufreq_freqs *ci)
 static DEFINE_PER_CPU(unsigned long, freq_scale) = SCHED_CAPACITY_SCALE;
 static DEFINE_PER_CPU(unsigned long, max_freq_scale) = SCHED_CAPACITY_SCALE;
 
-static void
+void
 scale_freq_capacity(struct cpufreq_policy *policy, struct cpufreq_freqs *freqs)
 {
 	unsigned long cur = freqs ? freqs->new : policy->cur;
@@ -2303,6 +2303,58 @@ int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_get_policy);
 
+extern int set_cpu_max_freq(const char *buf, const struct kernel_param *kp);
+void cpufreq_underfreq(struct cpufreq_policy *usrpolicy)
+{
+	struct cpufreq_frequency_table *freq_table;
+	struct cpufreq_policy *policy;
+	unsigned int max_freq;
+	struct cpufreq_frequency_table *pos;
+	char buf[256];
+
+	/* reset eventual previously set cpu max - underfreq shall override everything */
+	if (!usrpolicy) {
+		sprintf(buf, "0:%u 1:%u 2:%u 3:%u", UINT_MAX, UINT_MAX, UINT_MAX, UINT_MAX);
+		set_cpu_max_freq(buf, NULL);
+	}
+
+	list_for_each_entry(policy, &cpufreq_policy_list, policy_list) {
+		freq_table = cpufreq_frequency_get_table(policy->cpu);
+		if (freq_table) {
+			cpufreq_for_each_valid_entry(pos, freq_table) {
+				/*void*/;
+			}
+
+			if (!underfreq_enable) {
+				/* real maximum */
+				max_freq = (pos-1)->frequency;
+			} else if (policy->cpu > 1) {
+				/* gold cores step down one more... */
+				max_freq = (pos-4)->frequency;
+			} else {
+				/* ...than silver cores. */
+				max_freq = (pos-3)->frequency;
+			}
+			
+			/* well, botchy, but this hook is required to prevent manually setting a higher
+			   freq than underfreq would allow */
+			if (usrpolicy) {
+				if (usrpolicy->cpu == policy->cpu && usrpolicy->max > max_freq) {
+					pr_info("UNDERFREQ: Lowering max_freq cpu%d: %u kHz\n", policy->cpu, max_freq);
+					usrpolicy->max = max_freq;
+				}
+			} else {
+				/* Easiest way is to just call cpufreq's store procedure.
+				   ZUK's approach just restarting the current governor for their overfreq was no good idea,
+				   because it wouldn't update CPU capacities, etc. Besides, it confuses interactive. */
+				sprintf(buf, "%u", max_freq);
+				pr_info("UNDERFREQ: Requesting max_freq cpu%d: %s kHz\n", policy->cpu, buf);
+				store_scaling_max_freq(policy, buf, strlen(buf));
+			}
+		}
+	}
+}
+
 /*
  * policy : current policy.
  * new_policy: policy to be set.
@@ -2312,6 +2364,9 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 {
 	struct cpufreq_governor *old_gov;
 	int ret;
+
+	/* lower max if underfreq is enabled and requested value exceeds */
+	cpufreq_underfreq(new_policy);
 
 	pr_debug("setting new policy for CPU %u: %u - %u kHz\n",
 		 new_policy->cpu, new_policy->min, new_policy->max);

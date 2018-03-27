@@ -219,6 +219,40 @@ static const struct kernel_param_ops param_ops_num_clusters = {
 };
 device_param_cb(num_clusters, &param_ops_num_clusters, NULL, 0644);
 
+#ifdef CONFIG_VOID_DEFAULT_UNDERFREQ
+unsigned int underfreq_enable = 1;
+#else
+unsigned int underfreq_enable = 0;
+#endif
+
+extern void cpufreq_underfreq(struct cpufreq_policy *usrpolicy);
+extern void gpufreq_underfreq(int usrval);
+static int set_underfreq(const char *buf, const struct kernel_param *kp)
+{
+        unsigned int val;
+
+        if (sscanf(buf, "%u\n", &val) != 1)
+                return -EINVAL;
+
+        underfreq_enable = val;
+
+        cpufreq_underfreq(NULL);
+        gpufreq_underfreq(0);
+        return 0;
+}
+
+static int get_underfreq(char *buf, const struct kernel_param *kp)
+{
+        return snprintf(buf, PAGE_SIZE, "%u", underfreq_enable);
+}
+
+static const struct kernel_param_ops param_ops_overfreq = {
+        .set = set_underfreq,
+        .get = get_underfreq,
+};
+device_param_cb(void_underfreq, &param_ops_overfreq, NULL, 0644);
+
+
 static int set_max_cpus(const char *buf, const struct kernel_param *kp)
 {
 	unsigned int i, ntokens = 0;
@@ -397,7 +431,7 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 		i_cpu_stats = &per_cpu(cpu_stats, cpu);
 
 		/* HACK HACK HACK to ignore AOSP BoostFramework. Use InputBoost instead! */
-		if (val >= 1593600) {
+		if (val >= 1401600) {
 			pr_debug("msm_perf: rejecting CPU%u min-freq %u!", cpu, val);
 			return 0;
 		} else {
@@ -460,7 +494,7 @@ module_param_cb(cpu_min_freq, &param_ops_cpu_min_freq, NULL, 0644);
  * Userspace sends cpu#:max_freq_value to vote for max_freq_value as the new
  * scaling_max. To withdraw its vote it needs to enter cpu#:UINT_MAX
  */
-static int set_cpu_max_freq(const char *buf, const struct kernel_param *kp)
+int set_cpu_max_freq(const char *buf, const struct kernel_param *kp)
 {
 	int i, j, ntokens = 0;
 	unsigned int val, cpu;
