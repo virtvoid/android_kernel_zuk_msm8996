@@ -258,12 +258,24 @@ config VOID_CRAZY_CPU_OC
         help
 	  Overclock CPU to max 1.8/2.32 GHz, increase bus speeds.
 	  Probably unstable, beware!
+	  If disabled, 1.76/2.3 GHz.
 
 config VOID_CRAZY_GPU_OC
 	bool "Overclock GPU to 710 MHz like on Adreno 540. Probably unstable, beware!"
 	default n
 	help
 	  Overclock GPU to 710 MHz like on Adreno 540. Probably unstable, beware!
+	  If disabled, max GPU clock is still increased, 653 MHz like SD821.
+
+config VOID_DEFAULT_UNDERFREQ
+	bool "Underclock CPU/GPU per default in order to save power"
+	default n
+	help
+	  Default to underclocking CPU (1.4/1.92 GHz) and GPU (510 MHz).
+	  Can be changed on runtime via
+	  /sys/module/msm_performance/parameters/void_underfreq
+	  But note that enabling on runtime has preference over manually set maximums.
+	  When disabled, manual control is possible.
 
 config CPU_BOOST
 	tristate "Event base short term CPU freq boost"

@@ -29,6 +29,8 @@
 #include <linux/kthread.h>
 #include <asm/cacheflush.h>
 
+extern unsigned int underfreq_enable;
+
 /* The number of memstore arrays limits the number of contexts allowed.
  * If more contexts are needed, update multiple for MEMSTORE_SIZE
  */

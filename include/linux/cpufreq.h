@@ -20,6 +20,7 @@
 #include <linux/sysfs.h>
 #include <asm/cputime.h>
 
+extern unsigned int underfreq_enable;
 
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *

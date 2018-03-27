@@ -64,6 +64,8 @@
 #define KGSL_DMA_BIT_MASK	DMA_BIT_MASK(32)
 #endif
 
+extern void gpufreq_underfreq(int usrval);
+
 static char *kgsl_mmu_type;
 module_param_named(mmutype, kgsl_mmu_type, charp, 0);
 MODULE_PARM_DESC(kgsl_mmu_type, "Type of MMU to be used for graphics");
@@ -3981,6 +3983,8 @@ int kgsl_device_platform_probe(struct kgsl_device *device)
 
 	/* Initialize common sysfs entries */
 	kgsl_pwrctrl_init_sysfs(device);
+
+	gpufreq_underfreq(0);
 
 	return 0;
 
