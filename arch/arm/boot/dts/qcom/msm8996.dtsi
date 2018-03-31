@@ -62,7 +62,7 @@
 #ifdef CONFIG_VOID_CRAZY_CPU_OC
 			clock-frequency = <1804800>;
 #else
-			clock-frequency = <1766400>;
+			clock-frequency = <1670400>;
 #endif
 			efficiency = <2048>;
 			reg = <0x0 0x0>;
@@ -90,7 +90,7 @@
 #ifdef CONFIG_VOID_CRAZY_CPU_OC
 			clock-frequency = <1804800>;
 #else
-			clock-frequency = <1766400>;
+			clock-frequency = <1670400>;
 #endif
 			efficiency = <2048>;
 			reg = <0x0 0x1>;
@@ -113,7 +113,7 @@
 #ifdef CONFIG_VOID_CRAZY_CPU_OC
 			clock-frequency = <2323200>;
 #else
-			clock-frequency = <2304000>;
+			clock-frequency = <2227200>;
 #endif
 			efficiency = <2048>;
 			reg = <0x0 0x100>;
@@ -141,7 +141,7 @@
 #ifdef CONFIG_VOID_CRAZY_CPU_OC
 			clock-frequency = <2323200>;
 #else
-			clock-frequency = <2304000>;
+			clock-frequency = <2227200>;
 #endif
 			efficiency = <2048>;
 			reg = <0x0 0x101>;
