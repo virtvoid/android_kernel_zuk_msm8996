@@ -258,7 +258,7 @@ config VOID_CRAZY_CPU_OC
         help
 	  Overclock CPU to max 1.8/2.32 GHz, increase bus speeds.
 	  Probably unstable, beware!
-	  If disabled, 1.76/2.3 GHz.
+	  If disabled, 1.67/2.23 GHz.
 
 config VOID_CRAZY_GPU_OC
 	bool "Overclock GPU to 710 MHz like on Adreno 540. Probably unstable, beware!"
